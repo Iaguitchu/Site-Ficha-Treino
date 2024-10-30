@@ -1,0 +1,15 @@
+# Arquivos temporários
+*~
+
+# Arquivos de log
+*.log
+
+#pycache
+*.pyc
+
+*__pycache__/
+
+# Pasta node_modules
+node_modules/
+
+flask_session/

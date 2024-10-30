@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Poppins:wght@300;500&display=swap" rel="stylesheet">
+    <title>FitTrack</title>
+</head>
+<body>
+    <div class="header-home">
+        <div class="title-home">
+            <h1>Bem-vindo(a) ao FitTrack</h1>    
+        </div>
+
+        <div class="description-home">
+            <p>Aqui calculamos seu Basal e montamos uma dieta e treino personalizados para você!</p> 
+        </div>    
+    </div>
+
+    
+    <div class="form"> 
+        <div class="form-home">
+            <div class="input-group">
+                <input id="altura" class="input" type="number" name="altura" required placeholder="">
+                <label for="altura" class="placeholder">Altura</label>
+            </div>
+        </div>
+    
+        <div class="form-home">
+            <div class="input-group">
+                <input id="peso" class="input" type="number" name="peso" required placeholder="">
+                <label for="peso" class="placeholder">Peso</label>
+            </div>
+        </div>
+    </div>
+    
+    
+    
+</body>
+</html>

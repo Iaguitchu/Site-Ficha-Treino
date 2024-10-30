@@ -1,0 +1,84 @@
+.title-home{
+    display: flex;
+    justify-content: center;
+    margin-top: 5%;
+    color: #f7ba79;
+    
+}
+
+.description-home{
+    display: flex;
+    justify-content: center;
+    color: #f7ba79;
+    font-size: 20px;
+}
+
+body{
+    background-color: #1C1C1C;
+    font-family: 'Roboto', sans-serif;
+}
+
+h1, h2 {
+    font-family: 'Poppins', sans-serif;
+}
+
+.form{
+    margin-top: 5%;
+    margin-left: 20%;
+    padding: 30px;
+    background-color: #333333;
+    width: 60%;
+    border-radius: 10px;
+}
+
+.form-home {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.input-group {
+    position: relative;
+    width: 100%;
+}
+
+.input {
+    background-color: #686868;
+    color: white;
+    font-size: 15px;
+    outline: none;
+    border-radius: 12px;
+    border: none;
+    padding: 10px;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.placeholder {
+    position: absolute;
+    top: 15px;
+    left: 10px;
+    color: #ebe7e4;
+    font-size: 18px;
+    transition: all 0.3s ease;
+    pointer-events: none;
+    background-color: transparent;
+    padding: 0;
+}
+
+
+.input:focus + .placeholder,
+.input:not(:placeholder-shown) + .placeholder {
+    top: -10px;
+    left: 5px;
+    font-size: 14px;
+    color: white;
+}
+
+/* Quando o input está focado, o label fica vermelho */
+.input:focus + .placeholder {
+    color: #dc2f3e;
+    font-weight: bold;
+}
+  
