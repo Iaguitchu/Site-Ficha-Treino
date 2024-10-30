@@ -2,19 +2,19 @@
     display: flex;
     justify-content: center;
     margin-top: 5%;
-    color: #f7ba79;
+    color: #79f77f;
     
 }
 
 .description-home{
     display: flex;
     justify-content: center;
-    color: #f7ba79;
+    color: #79f77f;
     font-size: 20px;
 }
 
 body{
-    background-color: #1C1C1C;
+    background-color: #1d1c23;
     font-family: 'Roboto', sans-serif;
 }
 
@@ -24,10 +24,10 @@ h1, h2 {
 
 .form{
     margin-top: 5%;
-    margin-left: 20%;
+    margin-left: 30%;
     padding: 30px;
     background-color: #333333;
-    width: 60%;
+    width: 40%;
     border-radius: 10px;
 }
 
@@ -82,3 +82,24 @@ h1, h2 {
     font-weight: bold;
 }
   
+.button-home{
+    background-color: #79f77f;
+    border-radius: 5px;
+    color: rgb(19, 18, 18);
+    cursor: pointer;
+    border: none;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.button-home:hover{
+    background-color: #119419;
+    color: white;
+}
+
+
+.divisoria {
+    margin-top: 5%;
+    height: 2px;
+    background-color: rgb(31, 43, 74);
+  }
