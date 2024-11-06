@@ -1,8 +1,17 @@
 import os
 
-
 class Config(object):
+    # Configurações de sessão e compressão
     SESSION_TYPE = 'filesystem'
     COMPRESS_REGISTER = os.environ.get("COMPRESS_REGISTER", "True").lower() in ["true", "1"]
-    #MYSQL_CONNECTION = os.environ.get("MYSQL_CONNECTION", '{ "user": "iago", "password": "I@go7881", "host": "desafio-projeto-dio-iago.mysql.database.azure.com", "database": "teste" }')
+
+    # Configurações de banco de dados
     MYSQL_CONNECTION = os.environ.get("MYSQL_CONNECTION", '{ "user": "Iago", "password": "I@go222224", "host": "localhost", "database": "teste" }')
+
+    # Configurações de e-mail
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'iago2005andrade@gmail.com')
+    MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'amaj qjss ortx sana')
+    MAIL_DEFAULT_SENDER = ('Iago', 'iago2005andrade@gmail.com')
