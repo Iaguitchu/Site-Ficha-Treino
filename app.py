@@ -2,9 +2,14 @@ from flask import Flask
 from flask_session import Session
 from flask_compress import Compress
 from blueprints.page import page
+from libs.sql import configMySql
+from config import *
+
 
 app = Flask(__name__, static_url_path='', static_folder='static')
-app.config['SESSION_TYPE'] = 'filesystem'  # Exemplo de configuração de sessão
+app.config.from_object(Config)
+
+configMySql(app)
 
 app.register_blueprint(page)
 
