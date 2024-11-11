@@ -6,7 +6,8 @@ class Config(object):
     COMPRESS_REGISTER = os.environ.get("COMPRESS_REGISTER", "True").lower() in ["true", "1"]
 
     # Configurações de banco de dados
-    MYSQL_CONNECTION = os.environ.get("MYSQL_CONNECTION", '{ "user": "Iago", "password": "I@go222224", "host": "localhost", "database": "teste" }')
+    # MYSQL_CONNECTION = os.environ.get("MYSQL_CONNECTION", '{ "user": "Iago", "password": "I@go222224", "host": "localhost", "database": "teste", "auth_plugin":"mysql_native_password"}')
+    MYSQL_CONNECTION = os.environ.get("MYSQL_CONNECTION", '{ "user": "root", "password": "I@go222224", "host": "localhost", "database": "teste", "auth_plugin":"mysql_native_password"}')
 
     # Configurações de e-mail
     MAIL_SERVER = 'smtp.gmail.com'
