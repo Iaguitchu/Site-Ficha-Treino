@@ -15,3 +15,4 @@ class Config(object):
     MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'iago2005andrade@gmail.com')
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'amaj qjss ortx sana')
     MAIL_DEFAULT_SENDER = ('Iago', 'iago2005andrade@gmail.com')
+    OPENAI_API_KEY = os.environ.get("OPENAI_KEY")
