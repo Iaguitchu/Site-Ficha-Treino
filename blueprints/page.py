@@ -22,25 +22,16 @@ def receber_dados():
     idade = dados.get("idade")
     altura = dados.get("altura")
     peso = dados.get("peso")
+    alimento = dados.get("alimento")
     
-    print(f"Nome: {nome}, Email: {email}")
+    print(f"Nome: {nome}, Email: {email}, alimento{alimento}")
 
     # Salva no banco de dados
     sqlExecute("""insert into cliente ( objetivo, nome, email, idade, altura, peso, data_cadastro) 
                   values (%s,%s,%s,%s,%s,%s,NOW())""", (objetivo, nome, email, idade, altura, peso))
     
     # Gera o plano de treino e dieta
-
-    prompt = f"""
-    Crie um plano de treino focado em hipertrofia para {nome}, que tem {idade} anos, pesa {peso} kg, mede {altura} cm e deseja {objetivo}. 
-    Calcule a taxa metabólica basal (TMB) da pessoa e, com base nisso, elabore um plano de dieta que suporte o ganho muscular ou emagrecimento com base no {objetivo} calórico adequado.
-    
-    - O plano de treino deve incluir exercícios de musculação com séries e repetições focadas em hipertrofia, preferencialmente utilizando equipamentos de academia, priorize mais exercicos
-        com halteres e barra.
-    - O plano de dieta deve conter alimentos facil de serem encontrados em mercados com base no que o brasileiro come, dividido em 5 refeições, café da manhã, almoço,
-      lanche da tarde, janta e ceia.
-    """
-    plano = gerar_plano_treino_dieta(prompt)
+    plano = gerar_plano_treino_dieta(nome, idade, altura, peso, objetivo, alimento)
 
     # Envia o plano de treino e dieta por e-mail
     enviar_email_boas_vindas(email, nome, plano)
@@ -62,26 +53,76 @@ def enviar_email_boas_vindas(email_destinatario, nome_usuario, plano_treino_diet
     except Exception as e:
         print(f"Erro ao enviar e-mail: {e}")
 
-def gerar_plano_treino_dieta(prompt):
-    
-    messages = [{"role": "user", "content": prompt}]
-    
+def gerar_plano_treino_dieta(nome, idade, altura, peso, objetivo, alimento):
+    # Parte 1: Calcular TMB
+    prompt_tmb = f"Calcule a taxa metabólica basal (TMB) para {nome}, com {idade} anos, {peso} kg, e {altura} cm de altura. Forneça apenas o valor do resultado, sem o cálculo detalhado."
+
+    # Parte 2: Plano de Treino
+    prompt_treino = f"""
+    Crie um plano de treino de hipertrofia focado em {objetivo} para {nome}, com base no Basal + 300 kcal. O treino deve ser dividido em:
+    - Segunda-feira: Costas
+    - Terça-feira: Peito
+    - Quarta-feira: Descanso
+    - Quinta-feira: Pernas
+    - Sexta-feira: Braços
+    - Sábado: Ombros 
+    - Domingo: Descanso
+
+    Todos os exercícios devem ser descritos com séries e repetições focadas em hipertrofia, com preferência por equipamentos de academia como halteres e barras.
+    Não faça distinção entre iniciantes e avançados. O treino deve ser um plano padrão, diretamente aplicável ao usuário.
+    """
+
+    # Parte 3: Plano de Dieta
+    if alimento:
+        restricao_alimentos = f"Evite incluir os seguintes alimentos na dieta: {alimento}."
+    else:
+        restricao_alimentos = ""
+
+    prompt_dieta = f"""
+    Elabore um plano de dieta para {nome} com o objetivo de {objetivo}, dividido em 5 refeições: café da manhã, almoço, lanche da tarde, jantar e ceia.
+    - Cada refeição deve especificar a quantidade de alimentos em gramas (g), ao invés de colheres ou porções, e dar mais opções de proteína (ex: frango, filé mignon, tilápia, filé mignon suíno).
+    - Inclua alimentos típicos da dieta brasileira e fáceis de encontrar no Brasil, limite o feijão para até no maximo 70g.
+    - Adicione uma observação que saladas e vegetais são à vontade, sem limite de quantidade.
+    - Adicione uma observação que as proteínas pode ser frango, patinho, filé mignon, tilápia ou filé mignon suíno
+    - Coloque sempre carboidratos na dieta, nem que seja pouco, mas nunca zere os carboidratos
+    - Na janta e almoço smepre terá arroz branco
+    {restricao_alimentos}
+    """
+
     try:
-        response = openai.ChatCompletion.create(
+        # Geração de cada parte
+        response_tmb = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
-            messages=messages,
-            max_tokens=300,
-            temperature=3 
-        ) 
+            messages=[{"role": "user", "content": prompt_tmb}],
+            max_tokens=150,
+            temperature=0.7
+        )
         
-        # Retorna a resposta do ChatGPT
-        return response.choices[0].message["content"]
-    
+        response_treino = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt_treino}],
+            max_tokens=500,
+            temperature=0.7
+        )
+        
+        response_dieta = openai.ChatCompletion.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt_dieta}],
+            max_tokens=500,
+            temperature=0.7
+        )
+        
+        # Combina as partes
+        tmb_text = response_tmb.choices[0].message["content"]
+        treino_text = response_treino.choices[0].message["content"]
+        dieta_text = response_dieta.choices[0].message["content"]
+        
+        # Texto final
+        return f"1. Taxa Metabólica Basal (TMB):\n{tmb_text}\n\n2. Ficha de Treino:\n{treino_text}\n\n3. Plano de Dieta:\n{dieta_text}"
+
     except Exception as e:
         print(f"Erro ao acessar OpenAI: {e}")
         return "Não foi possível gerar o plano de treino e dieta no momento."
-    
-
 
 
 
