@@ -59,22 +59,51 @@ def gerar_plano_treino_dieta(nome, idade, altura, peso, objetivo, alimento):
 
     # Parte 2: Plano de Treino
     prompt_treino = f"""
-    Crie um plano de treino de hipertrofia focado em {objetivo} para {nome}, com base no Basal + 300 kcal. O treino deve ser dividido em precisa ter esses exercicios:
+    Crie um plano de treino de hipertrofia focado em {objetivo} para {nome}, com base no Basal + 300 kcal. O treino deve ser dividido precisa ser dividido desse jeito que vou passar.
+    
+    Escolha 4 exercicios para costas dessa lista que passei, e 3 para posteriors:
     - Segunda-feira: Costas:
-    (Remada Curvada Pronada, Remada Curvada Supinada, Barra Fixa, Puxada alta, Pulldown com corda, remada sentado, peck deck invertido, Encolhimento com Barra, Remada Unilateral (serrote)
+        (Remada Curvada Pronada, Remada Curvada Supinada, Barra Fixa, Puxada alta, Pulldown com corda, remada sentado, Remada Unilateral (serrote)
+    
+    Posterior de ombro:
+        Peck deck invertido
+    
     Posterior de cocha:
-    (Mesa flexora, cadeira flexora, stiff)
+        (Mesa flexora, cadeira flexora, stiff, elevação pélvica(pode ser no smith))
+    
+    
+    
+    Escolha 4 exercicio de peito e coloque o exercicio de panturrilha no começo do treino
     - Terça-feira: Peito
-    (supino inclinado com halteres ou articulado, supino reto com barra, packdeck, voador, flexão 60 rep 6x10, cross-over declinado)
+        (supino inclinado com halteres ou articulado, supino reto com barra, packdeck, voador, flexão 60 rep 6x10, cross-over declinado)
+    
     Panturrilha:
-    (panturrilha no smith com degrau 5x10 15s de descanso)
+        (panturrilha no smith com degrau 5x10 15s de descanso)
+    
+    
+    
     - Quarta-feira: Descanso
+    
+    
+    
+    Escolha 4 exercicio de quadríceps e coloque pra fazer panturrilha no final do treino
     - Quinta-feira: Pernas
-    (agachamento livre ou smith com pés alinhados com tronco, leg-press, cadeira extensora, 5 min passada)
+        (agachamento livre ou smith com pés alinhados com tronco, leg-press, cadeira extensora, 5 min passada, bulgaro, afundo)
+    
+    Panturrilha:
+        Gêmeos em pé 5x12 (pesado, 2s alongando)
+
+    
+    
+    Pode passar esses exatos exercicios nessa ordem
     - Sexta-feira: Braços
-    (Rosca Direta, Triceps com corda polia, Rosca Scott, Triceps com barra na polia, Biceps na polia alta unilateral, Triceps na polia unilateral, Biceps no banco 45 martelo simultaneo, triceps testa com barra W)
+        (Rosca Direta, Triceps com corda polia, Rosca Scott, Triceps com barra na polia, Biceps na polia alta unilateral, Triceps na polia unilateral, Biceps no banco 45 martelo simultaneo, triceps testa com barra W)
+    
+
     - Sábado: Ombros
-    (Desenvolvimento com halteres + Elevação frontal com barra, Elevação lateral com halter drop set 3x10-8-6, Elevação lateral na polia, ) 
+        (Desenvolvimento com halteres + Elevação frontal com barra, Elevação lateral com halter drop set 3x10-8-6, Elevação lateral na polia, Encolhimento com Barra ) 
+    
+    
     - Domingo: Descanso
 
     Todos os exercícios devem ser descritos com séries e repetições focadas em hipertrofia, com preferência por equipamentos de academia como halteres e barras.
