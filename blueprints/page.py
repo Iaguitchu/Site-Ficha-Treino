@@ -25,6 +25,7 @@ def receber_dados():
     altura = dados.get("altura")
     peso = dados.get("peso")
     alimento = dados.get("alimento")
+    sexo = dados.get("sexo")
     
     print(f"Nome: {nome}, Email: {email}, Alimento: {alimento}")
 
@@ -32,11 +33,15 @@ def receber_dados():
     sqlExecute("""insert into cliente ( objetivo, nome, email, idade, altura, peso, data_cadastro) 
                   values (%s,%s,%s,%s,%s,%s,NOW())""", (objetivo, nome, email, idade, altura, peso))
     
+    basal = calcular_basal(sexo, peso, altura, idade)
+    
     # Gera o plano de treino e dieta
-    plano = gerar_plano_treino_dieta(nome, idade, altura, peso, objetivo, alimento)
+    plano = gerar_plano_treino_dieta(nome, idade, objetivo, alimento, basal)
 
     # Nome do arquivo PDF
     nome_arquivo_pdf = f"Plano_{nome.replace(' ', '_')}.pdf"
+
+    
 
     # Gera o PDF
     if gerar_pdf(nome_arquivo_pdf, nome, plano):
@@ -46,6 +51,18 @@ def receber_dados():
     enviar_email_boas_vindas(email, nome, plano, nome_arquivo_pdf)
 
     return jsonify({"status": "sucesso", "mensagem": "Dados recebidos com sucesso"}), 200
+
+def calcular_basal(sexo, peso, altura, idade):
+   
+    if sexo.lower() == "masculino":
+        # Fórmula para homens
+        tmb = 88.36 + (13.4 * peso) + (4.8 * altura) - (5.7 * idade)
+    elif sexo.lower() == "feminino":
+        # Fórmula para mulheres
+        tmb = 447.6 + (9.2 * peso) + (3.1 * altura) - (4.3 * idade)
+
+    return round(tmb, 2)
+
 
 
 def enviar_email_boas_vindas(email_destinatario, nome_usuario, plano_treino_dieta, arquivo_pdf):
@@ -67,13 +84,117 @@ def enviar_email_boas_vindas(email_destinatario, nome_usuario, plano_treino_diet
         print(f"Erro ao enviar e-mail: {e}")
 
 
-def gerar_plano_treino_dieta(nome, idade, altura, peso, objetivo, alimento):
-    # Parte 1: Calcular TMB
-    prompt_tmb = f"Calcule a taxa metabólica basal (TMB) para {nome}, com {idade} anos, {peso} kg, e {altura} cm de altura. Forneça apenas o valor do resultado, sem o cálculo detalhado."
+def gerar_plano_treino_dieta(nome, idade, objetivo, alimento, basal):
+    dados_exemplo = {
+    "treino_a": {
+        "exercicios": {
+            1: "Remada Curvada Pronada",
+            2: "Remada Curvada Supinada",
+            3: "Barra Fixa",
+            4: "Puxada alta",
+            5: "Pulldown com corda segure",
+            6: "Remada sentado",
+            7: "Remada Unilateral (serrote)",
+            8: "Peck deck invertido com drop",
+            9: "Remada com Halteres Banco 45º",
+            10: "Mesa flexora",
+            11: "Cadeira flexora",
+            12: "stiff",
+            13: "Elevação pélvica(pode ser no smith)"
+        },
+        "repeticoes": {
+            1: "4x12",
+            2: "4x10",
+            3: "3x até a falha",
+            4: "Puxada alta",
+            5: "2s em baixo 3x15",
+            6: "4x10",
+            7: "4x10",
+            8: "3x15/15",
+            9: "3x12",
+            10: "4x10",
+            11: "3x12",
+            12: "3x12",
+            13: "3x8 (pesado)"
+        }
+    },
+    "treino_b": {
+        "exercicios": {
+            1: "Agachamento Livre",
+            2: "Leg Press",
+            3: "Cadeira extensora",
+            4:"passada",
+            5:"bulgaro",
+            6: "afundo",
+            7: "Gêmeos em pé"
+        },
+        "repeticoes": {
+            1: "4x10",
+            2: "4x12",
+            3: "1x20 e 3x12",
+            4: "5 min",
+            5: "4x10",
+            6: "4x15",
+            7: "5x12 2s alongando e 2s contraindo"
+        }
+    },
+    "treino_c": { 
+ 
+        "exercicios": {
+            1: "Supino inclinado com halteres ou articulado",
+            2: "Supino reto com barra",
+            3: "Voador",
+            4: "Flexão 60 rep",
+            5: "Cross-over declinado",
+            6: "Supino inclinado no Cross",
+            7:"Panturrilha no smith com degrau"
+            
+        },
+        "repeticoes": {
+            1: "4x12",
+            2: "1x15 3x8",
+            3: "4x10",
+            4: "6x10",
+            5: "4x10",
+            6:"5x10 2s no pico de contração",
+            7: "5x10 15s de descanso"
+        }
+    },
+    "treino_d": {
+        "exercicios": {
+            1: "Supino Reto",
+            2: "Crucifixo Inclinado",
+            3: "Flexão de Braço"
+        },
+        "repeticoes": {
+            1: "3x12",
+            2: "4x10",
+            3: "3x15"
+        }
+    },
+    "treino_e": {
+        "exercicios": {
+            1: "Supino Reto",
+            2: "Crucifixo Inclinado",
+            3: "Flexão de Braço"
+        },
+        "repeticoes": {
+            1: "3x12",
+            2: "4x10",
+            3: "3x15"
+        }
+    }
+}
 
+    # Parte 1: Calcular TMB
+    prompt_tmb = f"esse é o basal {basal}, de {nome}"
+
+    basal = float(basal) + 300
     # Parte 2: Plano de Treino
     prompt_treino = f"""
-    Crie um plano de treino de hipertrofia focado em {objetivo} para {nome}, com base no Basal + 300 kcal. O treino deve ser dividido precisa ser dividido desse jeito que vou passar.
+    Crie um plano de treino de hipertrofia focado em {objetivo} para {nome}, com base no Basal de {basal} + 300 kcal. O treino deve ser dividido precisa ser dividido desse jeito que vou passar
+    e me de um resultado em um dicionario python desse jeito:
+    
     
     Escolha 4 exercicios para costas dessa lista que passei, e 3 para posteriors:
     - Segunda-feira: Costas:
