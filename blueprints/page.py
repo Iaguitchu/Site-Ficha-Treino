@@ -3,6 +3,8 @@ from libs.sql import *
 from flask_mail import Message
 import openai
 import os
+from fpdf import FPDF
+
 
 page = Blueprint('page', __name__)
 
@@ -24,7 +26,7 @@ def receber_dados():
     peso = dados.get("peso")
     alimento = dados.get("alimento")
     
-    print(f"Nome: {nome}, Email: {email}, alimento{alimento}")
+    print(f"Nome: {nome}, Email: {email}, Alimento: {alimento}")
 
     # Salva no banco de dados
     sqlExecute("""insert into cliente ( objetivo, nome, email, idade, altura, peso, data_cadastro) 
@@ -33,25 +35,37 @@ def receber_dados():
     # Gera o plano de treino e dieta
     plano = gerar_plano_treino_dieta(nome, idade, altura, peso, objetivo, alimento)
 
-    # Envia o plano de treino e dieta por e-mail
-    enviar_email_boas_vindas(email, nome, plano)
+    # Nome do arquivo PDF
+    nome_arquivo_pdf = f"Plano_{nome.replace(' ', '_')}.pdf"
+
+    # Gera o PDF
+    if gerar_pdf(nome_arquivo_pdf, nome, plano):
+        print(f"PDF gerado: {nome_arquivo_pdf}")
+
+    # Envia o plano por e-mail com o PDF anexado
+    enviar_email_boas_vindas(email, nome, plano, nome_arquivo_pdf)
 
     return jsonify({"status": "sucesso", "mensagem": "Dados recebidos com sucesso"}), 200
 
-def enviar_email_boas_vindas(email_destinatario, nome_usuario, plano_treino_dieta):
+
+def enviar_email_boas_vindas(email_destinatario, nome_usuario, plano_treino_dieta, arquivo_pdf):
     msg = Message('Bem-vindo ao FitTrack!', recipients=[email_destinatario])
     msg.body = (
         f"Olá {nome_usuario}, obrigado por se registrar no FitTrack!\n\n"
-        "Aqui está seu plano de treino e dieta personalizado:\n\n"
-        f"{plano_treino_dieta}\n\n"
+        "Aqui está seu plano de treino e dieta personalizado em anexo.\n\n"
         "Esperamos que isso o ajude a atingir seus objetivos de saúde e bem-estar!"
     )
     try:
-        # Envia o e-mail usando `current_app.extensions`
+        # Anexa o arquivo PDF
+        with open(arquivo_pdf, "rb") as pdf_file:
+            msg.attach(f"{arquivo_pdf}", "application/pdf", pdf_file.read())
+
+        # Envia o e-mail
         current_app.extensions['mail'].send(msg)
         print("E-mail enviado com sucesso!")
     except Exception as e:
         print(f"Erro ao enviar e-mail: {e}")
+
 
 def gerar_plano_treino_dieta(nome, idade, altura, peso, objetivo, alimento):
     # Parte 1: Calcular TMB
@@ -63,19 +77,19 @@ def gerar_plano_treino_dieta(nome, idade, altura, peso, objetivo, alimento):
     
     Escolha 4 exercicios para costas dessa lista que passei, e 3 para posteriors:
     - Segunda-feira: Costas:
-        (Remada Curvada Pronada, Remada Curvada Supinada, Barra Fixa, Puxada alta, Pulldown com corda, remada sentado, Remada Unilateral (serrote)
+        (Remada Curvada Pronada 4x12, Remada Curvada Supinada 4x10, Barra Fixa 3x até a falha, Puxada alta segure 2s em baixo 3x12, Pulldown com corda segure 2s em baixo 3x15, remada sentado 4x10, Remada Unilateral (serrote) 4x10
     
     Posterior de ombro:
-        Peck deck invertido
+        Peck deck invertido com drop 3x15/15
     
     Posterior de cocha:
-        (Mesa flexora, cadeira flexora, stiff, elevação pélvica(pode ser no smith))
+        (Mesa flexora 4x10, cadeira flexora 3x12, stiff, elevação pélvica(pode ser no smith) 3x12)
     
     
     
     Escolha 4 exercicio de peito e coloque o exercicio de panturrilha no começo do treino
     - Terça-feira: Peito
-        (supino inclinado com halteres ou articulado, supino reto com barra, packdeck, voador, flexão 60 rep 6x10, cross-over declinado)
+        (supino inclinado com halteres ou articulado 4x12, supino reto com barra 1x15 3x8, voador 4x10, flexão 60 rep 6x10, cross-over declinado 4x10)
     
     Panturrilha:
         (panturrilha no smith com degrau 5x10 15s de descanso)
@@ -88,7 +102,7 @@ def gerar_plano_treino_dieta(nome, idade, altura, peso, objetivo, alimento):
     
     Escolha 4 exercicio de quadríceps e coloque pra fazer panturrilha no final do treino
     - Quinta-feira: Pernas
-        (agachamento livre ou smith com pés alinhados com tronco, leg-press, cadeira extensora, 5 min passada, bulgaro, afundo)
+        (agachamento livre ou smith com pés alinhados com tronco 4x10, leg-press 4x12, cadeira extensora 1x20 3x12, 5 min passada, bulgaro 4x10, afundo 4x15)
     
     Panturrilha:
         Gêmeos em pé 5x12 (pesado, 2s alongando)
@@ -97,11 +111,11 @@ def gerar_plano_treino_dieta(nome, idade, altura, peso, objetivo, alimento):
     
     Pode passar esses exatos exercicios nessa ordem
     - Sexta-feira: Braços
-        (Rosca Direta, Triceps com corda polia, Rosca Scott, Triceps com barra na polia, Biceps na polia alta unilateral, Triceps na polia unilateral, Biceps no banco 45 martelo simultaneo, triceps testa com barra W)
+        (Rosca Direta 4x10, Triceps com corda polia 4x12, Rosca Scott Unilatral 4x10, Triceps com barra na polia 4x10, Biceps na polia alta unilateral 3x15, Triceps na polia unilateral 3x15, Biceps no banco 45 martelo simultaneo 4x10, triceps testa com barra W 3x8)
     
 
     - Sábado: Ombros
-        (Desenvolvimento com halteres + Elevação frontal com barra, Elevação lateral com halter drop set 3x10-8-6, Elevação lateral na polia, Encolhimento com Barra ) 
+        (Desenvolvimento com halteres + Elevação frontal com barra 3x15, Elevação lateral com halter drop set 3x10-8-6, Elevação lateral na polia 4x10, Encolhimento com Barra 4x12 ) 
     
     
     - Domingo: Descanso
@@ -139,14 +153,14 @@ def gerar_plano_treino_dieta(nome, idade, altura, peso, objetivo, alimento):
         response_treino = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt_treino}],
-            max_tokens=500,
+            max_tokens=1000,
             temperature=0.7
         )
         
         response_dieta = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt_dieta}],
-            max_tokens=500,
+            max_tokens=1000,
             temperature=0.7
         )
         
@@ -161,6 +175,42 @@ def gerar_plano_treino_dieta(nome, idade, altura, peso, objetivo, alimento):
     except Exception as e:
         print(f"Erro ao acessar OpenAI: {e}")
         return "Não foi possível gerar o plano de treino e dieta no momento."
+
+
+def gerar_pdf(nome_arquivo, nome_usuario, plano_treino_dieta):
+    try:
+        pdf = FPDF()
+        pdf.set_auto_page_break(auto=True, margin=15)
+
+        # Página 1: TMB e Plano de Treino
+        pdf.add_page()
+        pdf.set_font("Arial", style="B", size=16)
+        pdf.cell(200, 10, txt=f"Plano de Treino e Dieta de {nome_usuario}", ln=True, align="C")
+        pdf.ln(10)
+
+        # Conteúdo da TMB e Treino
+        pdf.set_font("Arial", size=12)
+        treino_conteudo = plano_treino_dieta.split("\n\n3. Plano de Dieta:")[0]  # Parte do treino
+        pdf.multi_cell(0, 10, txt=treino_conteudo)
+
+        # Página 2: Plano de Dieta
+        pdf.add_page()
+        pdf.set_font("Arial", style="B", size=16)
+        pdf.cell(200, 10, txt="Plano de Dieta e Observações", ln=True, align="C")
+        pdf.ln(10)
+
+        # Conteúdo do Plano de Dieta
+        dieta_conteudo = plano_treino_dieta.split("\n\n3. Plano de Dieta:")[1]  # Parte da dieta
+        pdf.set_font("Arial", size=12)
+        pdf.multi_cell(0, 10, txt=dieta_conteudo)
+
+        # Salva o PDF
+        pdf.output(nome_arquivo)
+        print(f"PDF gerado com sucesso: {nome_arquivo}")
+        return True
+    except Exception as e:
+        print(f"Erro ao gerar PDF: {e}")
+        return False
 
 
 

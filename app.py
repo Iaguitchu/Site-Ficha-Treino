@@ -9,10 +9,11 @@ import openai
 
 app = Flask(__name__, static_url_path='', static_folder='static')
 app.config.from_object(Config)
+#openai.api_key = os.environ.get("OPENAI_KEY")
 
-app.config['OPENAI_API_KEY'] = os.environ.get("OPENAI_KEY")
+app.config['OPENAI_KEY'] = os.environ.get("OPENAI_KEY")
 
-openai.api_key = app.config['OPENAI_API_KEY']
+openai.api_key = app.config['OPENAI_KEY']
 
 configMySql(app)
 app.register_blueprint(page)
