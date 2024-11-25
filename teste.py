@@ -38,9 +38,41 @@ def adicionar_texto_pdf(input_pdf, output_pdf, dados):
                 can.drawString(305, y_position, f" {exercicio}")
                 can.drawString(500, y_position, f" {repeticao}")
                 y_position -= 25
+                
+            y_position = 255
+
+            for index, exercicio in dados["treino_b"]["exercicios"].items():
+                print(y_position, "C")
+                repeticao = dados["treino_c"]["repeticoes"][index]
+                can.drawString(20, y_position, f" {exercicio}")
+                can.drawString(210, y_position, f" {repeticao}")
+                y_position -= 25
+
+            y_position = 255
+
+            for index, exercicio in dados["treino_b"]["exercicios"].items():
+                print(y_position, "D")
+                repeticao = dados["treino_c"]["repeticoes"][index]
+                can.drawString(305, y_position, f" {exercicio}")
+                can.drawString(500, y_position, f" {repeticao}")
+                y_position -= 25
 
         # Outras páginas (caso necessário)
         elif page_number == 1:  # Página 2
+            y_position = 520  # Posição inicial no eixo Y
+            
+
+
+            for index, exercicio in dados["treino_a"]["exercicios"].items():
+                print(y_position, "A")
+                repeticao = dados["treino_a"]["repeticoes"][index]
+                can.drawString(160, y_position, f" {exercicio}")
+                can.drawString(360, y_position, f" {repeticao}")
+                y_position -= 25  # Ajusta a posição vertical para o próximo item
+            
+            
+            
+        else:
             can.drawString(20, 700, "Dieta:")
             can.drawString(20, 680, f"Café da Manhã: {dados.get('cafe_manha', 'N/A')}")
             can.drawString(20, 660, f"Almoço: {dados.get('almoco', 'N/A')}")
@@ -85,6 +117,42 @@ dados_exemplo = {
             1: "4x10",
             2: "4x12",
             3: "3x12"
+        }
+    },
+    "treino_c": {
+        "exercicios": {
+            1: "Supino Reto",
+            2: "Crucifixo Inclinado",
+            3: "Flexão de Braço"
+        },
+        "repeticoes": {
+            1: "3x12",
+            2: "4x10",
+            3: "3x15"
+        }
+    },
+    "treino_d": {
+        "exercicios": {
+            1: "Supino Reto",
+            2: "Crucifixo Inclinado",
+            3: "Flexão de Braço"
+        },
+        "repeticoes": {
+            1: "3x12",
+            2: "4x10",
+            3: "3x15"
+        }
+    },
+    "treino_e": {
+        "exercicios": {
+            1: "Supino Reto",
+            2: "Crucifixo Inclinado",
+            3: "Flexão de Braço"
+        },
+        "repeticoes": {
+            1: "3x12",
+            2: "4x10",
+            3: "3x15"
         }
     }
 }
