@@ -5,7 +5,7 @@ from io import BytesIO
 
 # Função para adicionar texto ao PDF
 # Função para adicionar texto ao PDF
-def adicionar_texto_pdf(input_pdf, output_pdf, dados):
+def adicionar_texto_pdf(input_pdf, output_pdf, dados, dados2):
     # Ler o PDF original
     reader = PdfReader(input_pdf)
     writer = PdfWriter()
@@ -57,7 +57,6 @@ def adicionar_texto_pdf(input_pdf, output_pdf, dados):
                 can.drawString(500, y_position, f" {repeticao}")
                 y_position -= 25
 
-        # Outras páginas (caso necessário)
         elif page_number == 1:  # Página 2
             y_position = 520  # Posição inicial no eixo Y
             
@@ -72,10 +71,18 @@ def adicionar_texto_pdf(input_pdf, output_pdf, dados):
             
             
             
-        else:
-            can.drawString(20, 700, "Dieta:")
-            can.drawString(20, 680, f"Café da Manhã: {dados.get('cafe_manha', 'N/A')}")
-            can.drawString(20, 660, f"Almoço: {dados.get('almoco', 'N/A')}")
+        elif page_number == 2:  # Página 3 - Dieta
+            y_position = 580
+            x_position = 40
+
+            for refeicao, itens in dados2["dieta"].items():
+                for item in itens:
+                    can.drawString(x_position, y_position, f"- {item}")
+                    y_position -= 220  # Ajusta a posição vertical para o próximo item
+                    if y_position == -80:
+                        y_position = 580
+                        x_position = 340
+
 
         can.showPage()  # Finaliza a página atual no canvas
         can.save()  # Salva o buffer
@@ -157,5 +164,25 @@ dados_exemplo = {
     }
 }
 
+dados_exemplo2 = {
+    "dieta": {
+        "cafe_manha": {
+            "30g whey, 3 bananas"
+        },
+        "almoço":{
+            "100g arroz, 130g frango"
+        },
+        "cafe_tarde":{
+            "2 ovos, 2 pão panco"
+        },
+        "janta":{
+            "100g arroz, 130g frango"
+        },
+        "ceia":{
+            "hipercalorico"
+    }
+    }
+    }
+
 # Chamar a função com o PDF enviado
-adicionar_texto_pdf("C:\Projetos\Site Academia/Ficha de treino academia.pdf", "Ficha_treino_editado.pdf", dados_exemplo)
+adicionar_texto_pdf("C:\Projetos\Site Academia/Ficha de treino academia.pdf", "Ficha_treino_editado.pdf", dados_exemplo, dados_exemplo2)
