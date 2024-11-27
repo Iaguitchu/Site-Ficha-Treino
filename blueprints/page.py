@@ -25,7 +25,7 @@ def receber_dados():
     altura = dados.get("altura")
     peso = dados.get("peso")
     alimento = dados.get("alimento")
-    sexo = dados.get("sexo")
+    # sexo = dados.get("sexo")
     
     print(f"Nome: {nome}, Email: {email}, Alimento: {alimento}")
 
@@ -33,10 +33,10 @@ def receber_dados():
     sqlExecute("""insert into cliente ( objetivo, nome, email, idade, altura, peso, data_cadastro) 
                   values (%s,%s,%s,%s,%s,%s,NOW())""", (objetivo, nome, email, idade, altura, peso))
     
-    basal = calcular_basal(sexo, peso, altura, idade)
+    # basal = calcular_basal(sexo, peso, altura, idade)
     
     # Gera o plano de treino e dieta
-    plano = gerar_plano_treino_dieta(nome, idade, objetivo, alimento, basal)
+    plano = gerar_plano_treino_dieta(nome, idade, objetivo, alimento)
 
     # Nome do arquivo PDF
     nome_arquivo_pdf = f"Plano_{nome.replace(' ', '_')}.pdf"
@@ -83,11 +83,12 @@ def enviar_email_boas_vindas(email_destinatario, nome_usuario, plano_treino_diet
     except Exception as e:
         print(f"Erro ao enviar e-mail: {e}")
 
+def gerar_plano_treino_dieta(nome, idade, objetivo, alimento):
 
-def gerar_plano_treino_dieta(nome, idade, objetivo, alimento, basal):
+
     dados_exemplo = {
     "treino_a": {
-        "exercicios": {
+        "exercicios_costas": {
             1: "Remada Curvada Pronada",
             2: "Remada Curvada Supinada",
             3: "Barra Fixa",
@@ -95,155 +96,209 @@ def gerar_plano_treino_dieta(nome, idade, objetivo, alimento, basal):
             5: "Pulldown com corda segure",
             6: "Remada sentado",
             7: "Remada Unilateral (serrote)",
-            8: "Peck deck invertido com drop",
-            9: "Remada com Halteres Banco 45º",
-            10: "Mesa flexora",
-            11: "Cadeira flexora",
-            12: "stiff",
-            13: "Elevação pélvica(pode ser no smith)"
+            8: "Remada com Halteres Banco 45º",
         },
-        "repeticoes": {
-            1: "4x12",
+        "repeticoes_costas": {
+            1: "1x12 2x20 a cada 5 descase 10 segundos",
             2: "4x10",
             3: "3x até a falha",
             4: "Puxada alta",
             5: "2s em baixo 3x15",
             6: "4x10",
             7: "4x10",
-            8: "3x15/15",
-            9: "3x12",
-            10: "4x10",
-            11: "3x12",
-            12: "3x12",
-            13: "3x8 (pesado)"
+            8: "3x12"
+        },
+        "exercicios_posteriorombro":{
+            1: "Peck deck invertido com drop",
+            2: "Remada alta Smith",
+            3: "Encolhimento trapezio",
+            4: "Posterior de ombro no cabo médio",
+            5: "Posterior de ombro no banco 45º"
+        },
+        "repeticoes_posteriorombro": {
+            1: "3x15/15",
+            2: "3x12",
+            3: "4x10",
+            4: "4x12",
+            5: "1x12 2x20 a cada 5 descanse 10 segundos" 
+        },
+        "exercicios_posteriorcoxa":{
+            1: "Mesa flexora",
+            2: "Cadeira flexora",
+            3: "stiff",
+            4: "Elevação pélvica(pode ser no smith)"
+        },
+        "repeticoes_posteriorcoxa": {
+            1:"4x10",
+            2: "3x12",
+            3: "3x12",
+            4: "3x8 (pesado)"
         }
     },
     "treino_b": {
-        "exercicios": {
+        "exercicios_quadriceps": {
             1: "Agachamento Livre",
             2: "Leg Press",
             3: "Cadeira extensora",
-            4:"passada",
-            5:"bulgaro",
-            6: "afundo",
-            7: "Gêmeos em pé"
+            4: "Passada",
+            5: "Bulgaro com Halter",
+            6: "Afundo com Halter"
         },
-        "repeticoes": {
+        "repeticoes_quadriceps": {
             1: "4x10",
             2: "4x12",
             3: "1x20 e 3x12",
             4: "5 min",
             5: "4x10",
             6: "4x15",
-            7: "5x12 2s alongando e 2s contraindo"
+            
+        },
+        "exercicios_panturrilha":{
+            1: "Gêmeos em pé"
+        },
+        "repeticoes_panturrilha": {
+            1: "5x12 2s alongando e 2s contraindo"
+        },
+        "exercicios_adutor": {
+            1:"Cadeira Adutora"
+        },
+        "repeticoes_adutor": {
+            1:"1x12 3x20 a cada 5 descase 10s"
         }
     },
     "treino_c": { 
  
-        "exercicios": {
+        "exercicios_peito": {
             1: "Supino inclinado com halteres ou articulado",
             2: "Supino reto com barra",
             3: "Voador",
             4: "Flexão 60 rep",
             5: "Cross-over declinado",
-            6: "Supino inclinado no Cross",
-            7:"Panturrilha no smith com degrau"
+            6: "Supino inclinado no Cross"
+            
             
         },
-        "repeticoes": {
+        "repeticoes_peito": {
             1: "4x12",
             2: "1x15 3x8",
             3: "4x10",
             4: "6x10",
             5: "4x10",
             6:"5x10 2s no pico de contração",
-            7: "5x10 15s de descanso"
+            
+        },
+        "exercicios_panturrilha": {
+            1:"Panturrilha no smith com degrau"
+        },
+        "repeticoes_panturrilha": {
+            1: "5x10 15s de descanso"
         }
     },
     "treino_d": {
-        "exercicios": {
-            1: "Supino Reto",
-            2: "Crucifixo Inclinado",
-            3: "Flexão de Braço"
+        "exercicios_biceps": {
+            1: "Rosca Direta",
+            2: "Rosca Scott Unilatral",
+            3: "Biceps na polia alta unilateral",
+            4: "Biceps no banco 45º martelo simultaneo",
+            5: "Rosca alternada"
         },
-        "repeticoes": {
-            1: "3x12",
-            2: "4x10",
-            3: "3x15"
+        "repeticoes_biceps": {
+            1: "4x10",
+            2: "4x10 (controlado)",
+            3: "3x15",
+            4: "4x10",
+            5: "3x12 4s descendo 2s contraindo"
+        },
+        "exercicios_triceps": {
+            1: "Triceps com barra na polia",
+            2: "Triceps com corda polia",
+            3: "Triceps na polia unilateral",
+            4: "Triceps testa com barra W",
+            5: "Triceps no supino (pegada fechada)"
+        },
+        "repeticoes_triceps": {
+            1: "4x8 (pesado)",
+            2: "4x12",
+            3: "3x15",
+            4: "3x8",
+            5: "4x10"
         }
     },
     "treino_e": {
-        "exercicios": {
-            1: "Supino Reto",
-            2: "Crucifixo Inclinado",
-            3: "Flexão de Braço"
+        "exercicios_ombro": {
+            1: "Desenvolvimento com halteres + Elevação frontal com barra",
+            2: "Elevação lateral com halter drop set",
+            3: "Elevação lateral na polia",
+            4: "Desenvolvimento arnold"
         },
-        "repeticoes": {
-            1: "3x12",
-            2: "4x10",
-            3: "3x15"
+        "repeticoes_ombro": {
+            1: "3x15 + 15",
+            2: "3x6-8-10 3x10-8-6",
+            3: "4x10",
+            4: "3x12"
+        },
+        "exercicios_panturrilha": {
+            1: "Panturrilha unilateral degrau"
+        },
+
+        "repeticoes_panturrilha": {
+            1: "3x20 a cada 10 descase 10 segundos"
         }
     }
 }
 
     # Parte 1: Calcular TMB
-    prompt_tmb = f"esse é o basal {basal}, de {nome}"
+    prompt_tmb = f"esse é o basal 2000, de {nome}"
 
-    basal = float(basal) + 300
+    #basal = float(basal) + 300
     # Parte 2: Plano de Treino
     prompt_treino = f"""
-    Crie um plano de treino de hipertrofia focado em {objetivo} para {nome}, com base no Basal de {basal} + 300 kcal. O treino deve ser dividido precisa ser dividido desse jeito que vou passar
-    e me de um resultado em um dicionario python desse jeito:
-    
-    
-    Escolha 4 exercicios para costas dessa lista que passei, e 3 para posteriors:
-    - Segunda-feira: Costas:
-        (Remada Curvada Pronada 4x12, Remada Curvada Supinada 4x10, Barra Fixa 3x até a falha, Puxada alta segure 2s em baixo 3x12, Pulldown com corda segure 2s em baixo 3x15, remada sentado 4x10, Remada Unilateral (serrote) 4x10
-    
-    Posterior de ombro:
-        Peck deck invertido com drop 3x15/15
-    
-    Posterior de cocha:
-        (Mesa flexora 4x10, cadeira flexora 3x12, stiff, elevação pélvica(pode ser no smith) 3x12)
-    
-    
-    
-    Escolha 4 exercicio de peito e coloque o exercicio de panturrilha no começo do treino
-    - Terça-feira: Peito
-        (supino inclinado com halteres ou articulado 4x12, supino reto com barra 1x15 3x8, voador 4x10, flexão 60 rep 6x10, cross-over declinado 4x10)
-    
-    Panturrilha:
-        (panturrilha no smith com degrau 5x10 15s de descanso)
-    
-    
-    
-    - Quarta-feira: Descanso
-    
-    
-    
-    Escolha 4 exercicio de quadríceps e coloque pra fazer panturrilha no final do treino
-    - Quinta-feira: Pernas
-        (agachamento livre ou smith com pés alinhados com tronco 4x10, leg-press 4x12, cadeira extensora 1x20 3x12, 5 min passada, bulgaro 4x10, afundo 4x15)
-    
-    Panturrilha:
-        Gêmeos em pé 5x12 (pesado, 2s alongando)
+Baseando-se nos exercícios e repetições a seguir:
 
-    
-    
-    Pode passar esses exatos exercicios nessa ordem
-    - Sexta-feira: Braços
-        (Rosca Direta 4x10, Triceps com corda polia 4x12, Rosca Scott Unilatral 4x10, Triceps com barra na polia 4x10, Biceps na polia alta unilateral 3x15, Triceps na polia unilateral 3x15, Biceps no banco 45 martelo simultaneo 4x10, triceps testa com barra W 3x8)
-    
+Treino A:
+- Exercícios de costas: {dados_exemplo['treino_a']['exercicios_costas']}
+- Repetições de costas: {dados_exemplo['treino_a']['repeticoes_costas']}
+- Exercícios de posterior de ombro: {dados_exemplo['treino_a']['exercicios_posteriorombro']}
+- Repetições de posterior de ombro: {dados_exemplo['treino_a']['repeticoes_posteriorombro']}
+- Exercícios de posterior de coxa: {dados_exemplo['treino_a']['exercicios_posteriorcoxa']}
+- Repetições de posterior de coxa: {dados_exemplo['treino_a']['repeticoes_posteriorcoxa']}
 
-    - Sábado: Ombros
-        (Desenvolvimento com halteres + Elevação frontal com barra 3x15, Elevação lateral com halter drop set 3x10-8-6, Elevação lateral na polia 4x10, Encolhimento com Barra 4x12 ) 
-    
-    
-    - Domingo: Descanso
+Treino B:
+- Exercícios de quadríceps: {dados_exemplo['treino_b']['exercicios_quadriceps']}
+- Repetições de quadríceps: {dados_exemplo['treino_b']['repeticoes_quadriceps']}
+- Exercício de panturrilha: {dados_exemplo['treino_b']['exercicios_panturrilha']}
+- Repetição de panturrilha: {dados_exemplo['treino_b']['repeticoes_panturrilha']}
+- Exercício de adutor: {dados_exemplo['treino_b']['exercicios_adutor']}
+- Repetição de adutor: {dados_exemplo['treino_b']['repeticoes_adutor']}
 
-    Todos os exercícios devem ser descritos com séries e repetições focadas em hipertrofia, com preferência por equipamentos de academia como halteres e barras.
-    Não faça distinção entre iniciantes e avançados. O treino deve ser um plano padrão, diretamente aplicável ao usuário.
-    """
+Treino C:
+- Exercícios de peito: {dados_exemplo['treino_c']['exercicios_peito']}
+- Repetições de peito: {dados_exemplo['treino_c']['repeticoes_peito']}
+- Exercício de panturrilha: {dados_exemplo['treino_c']['exercicios_panturrilha']}
+- Repetição de panturrilha: {dados_exemplo['treino_c']['repeticoes_panturrilha']}
+
+Treino D:
+- Exercícios de bíceps: {dados_exemplo['treino_d']['exercicios_biceps']}
+- Repetições de bíceps: {dados_exemplo['treino_d']['repeticoes_biceps']}
+- Exercícios de tríceps: {dados_exemplo['treino_d']['exercicios_triceps']}
+- Repetições de tríceps: {dados_exemplo['treino_d']['repeticoes_triceps']}
+
+Treino E:
+- Exercícios de ombro: {dados_exemplo['treino_e']['exercicios_ombro']}
+- Repetições de ombro: {dados_exemplo['treino_e']['repeticoes_ombro']}
+- Exercício de panturrilha: {dados_exemplo['treino_e']['exercicios_panturrilha']}
+- Repetição de panturrilha: {dados_exemplo['treino_e']['repeticoes_panturrilha']}
+
+Agora, crie um plano de treino detalhado para A, B, C, D, E conforme as regras:
+1. No treino A, escolha 4 exercícios de costas, 2 de posterior de ombro e 2 de posterior de coxa.
+2. No treino B, escolha 4 exercícios de quadríceps, 1 de panturrilha e 1 de adutor.
+3. No treino C, escolha 4 exercícios de peito e 1 de panturrilha.
+4. No treino D, escolha 3 de bíceps e 3 de tríceps, intercalando-os.
+5. No treino E, escolha 3 de ombro (incluindo obrigatoriamente "Elevação lateral com halter drop set") e 1 de panturrilha.
+
+Inclua o nome dos exercícios e as repetições de forma detalhada.
+"""
+
 
     # Parte 3: Plano de Dieta
     if alimento:
