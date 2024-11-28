@@ -247,8 +247,6 @@ def gerar_plano_treino_dieta(nome, idade, objetivo, alimento):
     }
 }
 
-    # Parte 1: Calcular TMB
-    prompt_tmb = f"esse é o basal 2000, de {nome}"
 
     #basal = float(basal) + 300
     # Parte 2: Plano de Treino
@@ -307,7 +305,7 @@ Inclua o nome dos exercícios e as repetições de forma detalhada.
         restricao_alimentos = ""
 
     prompt_dieta = f"""
-    Elabore um plano de dieta para {nome} com o objetivo de {objetivo}, dividido em 5 refeições: café da manhã, almoço, lanche da tarde, jantar e ceia.
+    Elabore um plano de dieta para {nome} que tem o basal de 2000kcal com o objetivo de {objetivo}, dividido em 5 refeições: café da manhã, almoço, lanche da tarde, jantar e ceia.
     - Cada refeição deve especificar a quantidade de alimentos em gramas (g), ao invés de colheres ou porções, e dar mais opções de proteína (ex: frango, filé mignon, tilápia, filé mignon suíno).
     - Inclua alimentos típicos da dieta brasileira e fáceis de encontrar no Brasil, limite o feijão para até no maximo 70g.
     - Adicione uma observação que saladas e vegetais são à vontade, sem limite de quantidade.
@@ -318,14 +316,7 @@ Inclua o nome dos exercícios e as repetições de forma detalhada.
     """
 
     try:
-        # Geração de cada parte
-        response_tmb = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[{"role": "user", "content": prompt_tmb}],
-            max_tokens=200,
-            temperature=0.7
-        )
-        
+        # Geração de cada parte        
         response_treino = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[{"role": "user", "content": prompt_treino}],
@@ -341,12 +332,12 @@ Inclua o nome dos exercícios e as repetições de forma detalhada.
         )
         
         # Combina as partes
-        tmb_text = response_tmb.choices[0].message["content"]
+        # tmb_text = response_tmb.choices[0].message["content"]
         treino_text = response_treino.choices[0].message["content"]
         dieta_text = response_dieta.choices[0].message["content"]
         
         # Texto final
-        return f"1. Taxa Metabólica Basal (TMB):\n{tmb_text}\n\n2. Ficha de Treino:\n{treino_text}\n\n3. Plano de Dieta:\n{dieta_text}"
+        return f"1. Taxa Metabólica Basal (TMB):\n 2000 \n\n2. Ficha de Treino:\n{treino_text}\n\n3. Plano de Dieta:\n{dieta_text}"
 
     except Exception as e:
         print(f"Erro ao acessar OpenAI: {e}")
