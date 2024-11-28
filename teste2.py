@@ -220,6 +220,111 @@ def gerar_treino_aleatorio(dados_exemplo):
 
 # Teste da função
 plano = gerar_treino_aleatorio(dados_exemplo)
-print(plano)
+
 #print(dados_exemplo)
 #print(formatar_plano_treino(plano))
+
+
+
+from PyPDF2 import PdfReader, PdfWriter, PageObject
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from io import BytesIO
+
+# Função para adicionar texto ao PDF
+# Função para adicionar texto ao PDF
+def adicionar_texto_pdf(input_pdf, output_pdf, dados, dados2):
+    # Ler o PDF original
+    reader = PdfReader(input_pdf)
+    writer = PdfWriter()
+
+    for page_number, page in enumerate(reader.pages):
+        # Criar um buffer para a nova camada
+        packet = BytesIO()
+        can = canvas.Canvas(packet, pagesize=letter)
+        can.setFont("Helvetica-Bold", 12)
+        can.setFillColorRGB(255, 255, 255)  # Cor do texto (preto)
+
+        # Adicionar texto dependendo da página
+        if page_number == 0:  # Página 1
+            y_position = 560  # Posição inicial no eixo Y
+
+            # Iterar pelos grupos de exercícios do treino A
+            for grupo, exercicios in dados["treino_a"].items():
+                if isinstance(exercicios, dict):  # Certificar que é um grupo válido
+                    for nome, repeticao in exercicios.items():
+                        can.drawString(20, y_position, f"{nome}")  # Nome do exercício
+                        can.drawString(210, y_position, f"{repeticao}")  # Repetições
+                        y_position -= 25  # Ajusta a posição vertical para o próximo item
+
+            # Repetir para treino B
+            y_position = 560
+            for grupo, exercicios in dados["treino_b"].items():
+                if isinstance(exercicios, dict):  # Certificar que é um grupo válido
+                    for nome, repeticao in exercicios.items():
+                        can.drawString(305, y_position, f"{nome}")  # Nome do exercício
+                        can.drawString(500, y_position, f"{repeticao}")  # Repetições
+                        y_position -= 25
+
+        elif page_number == 1:  # Página 2
+            y_position = 520  # Posição inicial no eixo Y
+
+            for grupo, exercicios in dados["treino_c"].items():
+                if isinstance(exercicios, dict):  # Certificar que é um grupo válido
+                    for nome, repeticao in exercicios.items():
+                        can.drawString(20, y_position, f"{nome}")
+                        can.drawString(210, y_position, f"{repeticao}")
+                        y_position -= 25
+
+        elif page_number == 2:  # Página 3 - Dieta
+            y_position = 580
+            x_position = 40
+
+            for refeicao, itens in dados2["dieta"].items():
+                for item in itens:
+                    can.drawString(x_position, y_position, f"- {item}")
+                    y_position -= 20  # Ajusta a posição vertical para o próximo item
+                    if y_position < 80:
+                        y_position = 580
+                        x_position += 200
+
+        can.showPage()  # Finaliza a página atual no canvas
+        can.save()  # Salva o buffer
+
+        # Combinar com a página original
+        packet.seek(0)
+        overlay = PdfReader(packet)
+        overlay_page = overlay.pages[0]
+
+        # Adicionar a sobreposição à página original
+        page.merge_page(overlay_page)
+        writer.add_page(page)
+
+    # Salvar o PDF resultante
+    with open(output_pdf, "wb") as output:
+        writer.write(output)
+
+
+
+dados_exemplo2 = {
+    "dieta": {
+        "cafe_manha": {
+            "30g whey, 3 bananas"
+        },
+        "almoço":{
+            "100g arroz, 130g frango"
+        },
+        "cafe_tarde":{
+            "2 ovos, 2 pão panco"
+        },
+        "janta":{
+            "100g arroz, 130g frango"
+        },
+        "ceia":{
+            "hipercalorico"
+    }
+    }
+    }
+
+# Chamar a função com o PDF enviado
+adicionar_texto_pdf("C:\Projetos\Site Academia/Ficha de treino academia.pdf", "Ficha_treino_editado.pdf", plano, dados_exemplo2)
