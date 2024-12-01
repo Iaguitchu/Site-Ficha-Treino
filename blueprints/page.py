@@ -99,7 +99,7 @@ def gerar_plano_treino_dieta(nome, idade, objetivo, alimento):
             8: "Remada com Halteres Banco 45º",
         },
         "repeticoes_costas": {
-            1: "1x12 2x20 a cada 5 descase 10 segundos",
+            1: "1x12 2x20 a cada 5 descanse 10 segundos",
             2: "4x10",
             3: "3x até a falha",
             4: "Puxada alta",
@@ -163,7 +163,7 @@ def gerar_plano_treino_dieta(nome, idade, objetivo, alimento):
             1:"Cadeira Adutora"
         },
         "repeticoes_adutor": {
-            1:"1x12 3x20 a cada 5 descase 10s"
+            1:"1x12 3x20 a cada 5 descanse 10s"
         }
     },
     "treino_c": { 
@@ -242,7 +242,7 @@ def gerar_plano_treino_dieta(nome, idade, objetivo, alimento):
         },
 
         "repeticoes_panturrilha": {
-            1: "3x20 a cada 10 descase 10 segundos"
+            1: "3x20 a cada 10 descanse 10 segundos"
         }
     }
 }

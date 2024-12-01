@@ -1,25 +1,31 @@
 import random
 
+from PyPDF2 import PdfReader, PdfWriter, PageObject
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from io import BytesIO
+import textwrap
+
 # def listar_exercicios_e_repeticoes():
 
 dados_exemplo = {
     "treino_a": {
         "exercicios_costas": {
-            1: "Remada Curvada Pronada",
+            1: "Remada Curvada Pronada a cada 5 descase 10 segundos",
             2: "Remada Curvada Supinada",
             3: "Barra Fixa",
             4: "Puxada alta",
-            5: "Pulldown com corda segure",
+            5: "Pulldown com corda segure 2s em baixo",
             6: "Remada sentado",
             7: "Remada Unilateral (serrote)",
             8: "Remada com Halteres Banco 45º",
         },
         "repeticoes_costas": {
-            1: "1x12 2x20 a cada 5 descase 10 segundos",
+            1: "1x12 2x20 ",
             2: "4x10",
             3: "3x até a falha",
             4: "Puxada alta",
-            5: "2s em baixo 3x15",
+            5: "3x15",
             6: "4x10",
             7: "4x10",
             8: "3x12"
@@ -29,14 +35,14 @@ dados_exemplo = {
             2: "Remada alta Smith",
             3: "Encolhimento trapezio",
             4: "Posterior de ombro no cabo médio",
-            5: "Posterior de ombro no banco 45º"
+            5: "Posterior de ombro no banco 45º a cada 5 descanse 10 segundos"
         },
         "repeticoes_posteriorombro": {
             1: "3x15/15",
             2: "3x12",
             3: "4x10",
             4: "4x12",
-            5: "1x12 2x20 a cada 5 descanse 10 segundos" 
+            5: "1x12 2x20 " 
         },
         "exercicios_posteriorcoxa":{
             1: "Mesa flexora",
@@ -70,16 +76,16 @@ dados_exemplo = {
             
         },
         "exercicios_panturrilha":{
-            1: "Gêmeos em pé"
+            1: "Gêmeos em pé 2s alongando e 2s contraindo"
         },
         "repeticoes_panturrilha": {
-            1: "5x12 2s alongando e 2s contraindo"
+            1: "5x12 "
         },
         "exercicios_adutor": {
-            1:"Cadeira Adutora"
+            1:"Cadeira Adutora a cada 5 descase 10s"
         },
         "repeticoes_adutor": {
-            1:"1x12 3x20 a cada 5 descase 10s"
+            1:"1x12 3x20"
         }
     },
     "treino_c": { 
@@ -158,7 +164,7 @@ dados_exemplo = {
         },
 
         "repeticoes_panturrilha": {
-            1: "3x20 a cada 10 descase 10 segundos"
+            1: "3x20 descase 10 segundos"
         }
     }
 }
@@ -200,7 +206,7 @@ def gerar_treino_aleatorio(dados_exemplo):
             # Verificar se o grupo existe nos dados
             if grupo in dados_exemplo[treino]:
                 # Selecionar aleatoriamente os exercícios do grupo
-                exercicios = random.sample(dados_exemplo[treino][grupo].items(), qtd)
+                exercicios = random.sample(list(dados_exemplo[treino][grupo].items()), qtd)
                 
                 # Adicionar os exercícios e suas repetições ao plano
                 plano_treino[treino][grupo] = {
@@ -212,24 +218,6 @@ def gerar_treino_aleatorio(dados_exemplo):
     
     return plano_treino
 
-# Formatar o plano em um texto legível
-# def formatar_plano_treino(plano_treino):
-#     teste = {}
-#     for grupo
-
-
-# Teste da função
-plano = gerar_treino_aleatorio(dados_exemplo)
-
-#print(dados_exemplo)
-#print(formatar_plano_treino(plano))
-
-
-
-from PyPDF2 import PdfReader, PdfWriter, PageObject
-from reportlab.pdfgen import canvas
-from reportlab.lib.pagesizes import letter
-from io import BytesIO
 
 # Função para adicionar texto ao PDF
 # Função para adicionar texto ao PDF
@@ -242,39 +230,108 @@ def adicionar_texto_pdf(input_pdf, output_pdf, dados, dados2):
         # Criar um buffer para a nova camada
         packet = BytesIO()
         can = canvas.Canvas(packet, pagesize=letter)
-        can.setFont("Helvetica-Bold", 12)
+        can.setFont("Helvetica-Bold", 8)
         can.setFillColorRGB(255, 255, 255)  # Cor do texto (preto)
 
         # Adicionar texto dependendo da página
         if page_number == 0:  # Página 1
-            y_position = 560  # Posição inicial no eixo Y
+            y_position_text= 660  # Posição inicial no eixo Y
+            y_position_text2 = 650
+            y_position_rep = 650
 
             # Iterar pelos grupos de exercícios do treino A
             for grupo, exercicios in dados["treino_a"].items():
                 if isinstance(exercicios, dict):  # Certificar que é um grupo válido
                     for nome, repeticao in exercicios.items():
-                        can.drawString(20, y_position, f"{nome}")  # Nome do exercício
-                        can.drawString(210, y_position, f"{repeticao}")  # Repetições
-                        y_position -= 25  # Ajusta a posição vertical para o próximo item
+                        # Quebrar texto em múltiplas linhas se ultrapassar 35 caracteres
+                        linhas = textwrap.wrap(nome, width=35)
+                        print(linhas, len(linhas))
+                        for index, linha in enumerate(linhas):  # Use enumerate para obter o índice e o valor
+                            if len(linhas) > 1:
+                                if index == 0:  # Se for o índice 0
+                                    can.drawString(20, y_position_text, linha)  # Nome do exercício na posição text
+                                elif index == 1:  # Se for o índice 1
+                                    print(f"Segunda linha: {linha}")
+                                    can.drawString(20, y_position_text2, linha)  # Nome do exercício na posição text2
+                                else:
+                                    # Caso tenha mais linhas, ajuste a posição dinamicamente
+                                    y_position_text2 -= 10
+                                    print(f"Linha adicional: {linha}")
+                                    can.drawString(20, y_position_text2, linha)
+                            else:
+                                can.drawString(20, y_position_text2, linha)
+                                
+
+                        can.drawString(210, y_position_rep, f"{repeticao}")  # Repetições
+
+                        y_position_text -= 35
+                        y_position_text2 -= 35
+                        y_position_rep -= 35
 
             # Repetir para treino B
-            y_position = 560
+            y_position_text = 660
+            y_position_text2 = 650
+            y_position_rep = 650
+
             for grupo, exercicios in dados["treino_b"].items():
                 if isinstance(exercicios, dict):  # Certificar que é um grupo válido
                     for nome, repeticao in exercicios.items():
-                        can.drawString(305, y_position, f"{nome}")  # Nome do exercício
-                        can.drawString(500, y_position, f"{repeticao}")  # Repetições
-                        y_position -= 25
+                        # Quebrar texto em múltiplas linhas se ultrapassar 35 caracteres
+                        linhas = textwrap.wrap(nome, width=35)
+                        for index, linha in enumerate(linhas):  # Use enumerate para obter o índice e o valor
+                            if len(linhas) > 1:
+                                if index == 0:  # Se for o índice 0
+                                    can.drawString(305, y_position_text, linha)  # Nome do exercício na posição text
+                                elif index == 1:  # Se for o índice 1
+                                    print(f"Segunda linha: {linha}")
+                                    can.drawString(305, y_position_text2, linha)  # Nome do exercício na posição text2
+                                else:
+                                    # Caso tenha mais linhas, ajuste a posição dinamicamente
+                                    y_position_text2 -= 10
+                                    print(f"Linha adicional: {linha}")
+                                    can.drawString(305, y_position_text2, linha)
+                            else:
+                                can.drawString(305, y_position_text2, linha)
+                                
+
+                        can.drawString(500, y_position_rep, f"{repeticao}")  # Repetições
+                        y_position_text -= 35
+                        y_position_text2 -= 35
+                        y_position_rep -= 35
+
 
         elif page_number == 1:  # Página 2
-            y_position = 520  # Posição inicial no eixo Y
+            y_position_text = 595
+            y_position_text2 = 585
+            y_position_rep = 585
 
             for grupo, exercicios in dados["treino_c"].items():
                 if isinstance(exercicios, dict):  # Certificar que é um grupo válido
                     for nome, repeticao in exercicios.items():
-                        can.drawString(20, y_position, f"{nome}")
-                        can.drawString(210, y_position, f"{repeticao}")
-                        y_position -= 25
+                        # Quebrar texto em múltiplas linhas se ultrapassar 35 caracteres
+                        linhas = textwrap.wrap(nome, width=35)
+                        for index, linha in enumerate(linhas):  # Use enumerate para obter o índice e o valor
+                            if len(linhas) > 1:
+                                if index == 0:  # Se for o índice 0
+                                    can.drawString(165, y_position_text, linha)  # Nome do exercício na posição text
+                                elif index == 1:  # Se for o índice 1
+                                    print(f"Segunda linha: {linha}")
+                                    print(y_position_text2)
+                                    can.drawString(165, y_position_text2, linha)  # Nome do exercício na posição text2
+                                else:
+                                    # Caso tenha mais linhas, ajuste a posição dinamicamente
+                                    y_position_text2 -= 10
+                                    print(f"Linha adicional: {linha}")
+                                    can.drawString(165, y_position_text2, linha)
+                            else:
+                                 can.drawString(165, y_position_text2, linha)
+                                
+
+                        can.drawString(350, y_position_rep, f"{repeticao}")  # Repetições
+                        y_position_text -= 35
+                        y_position_text2 -= 35
+                        y_position_rep -= 35
+
 
         elif page_number == 2:  # Página 3 - Dieta
             y_position = 580
@@ -326,5 +383,9 @@ dados_exemplo2 = {
     }
     }
 
+
+plano = gerar_treino_aleatorio(dados_exemplo)
+
+
 # Chamar a função com o PDF enviado
-adicionar_texto_pdf("C:\Projetos\Site Academia/Ficha de treino academia.pdf", "Ficha_treino_editado.pdf", plano, dados_exemplo2)
+adicionar_texto_pdf("C:\Projetos\Site-Ficha-Treino/Ficha de treino academia.pdf", "Ficha_treino_editado.pdf", plano, dados_exemplo2)
