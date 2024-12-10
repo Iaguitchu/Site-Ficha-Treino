@@ -14,7 +14,7 @@ dados_exemplo = {
             1: "Remada Curvada Pronada a cada 5 descase 10 segundos",
             2: "Remada Curvada Supinada",
             3: "Barra Fixa",
-            4: "Puxada alta",
+            4: "Puxada alta contraia 2s e volta em 4s",
             5: "Pulldown com corda segure 2s em baixo",
             6: "Remada sentado",
             7: "Remada Unilateral (serrote)",
@@ -24,7 +24,7 @@ dados_exemplo = {
             1: "1x12 2x20 ",
             2: "4x10",
             3: "3x até a falha",
-            4: "Puxada alta",
+            4: "3x10, 1x15",
             5: "3x15",
             6: "4x10",
             7: "4x10",
@@ -96,7 +96,7 @@ dados_exemplo = {
             3: "Voador",
             4: "Flexão 60 rep",
             5: "Cross-over declinado",
-            6: "Supino inclinado no Cross"
+            6: "Supino inclinado no Cross 2 segundos no pico de contração"
             
             
         },
@@ -106,14 +106,14 @@ dados_exemplo = {
             3: "4x10",
             4: "6x10",
             5: "4x10",
-            6:"5x10 2s no pico de contração",
+            6:"5x10 ",
             
         },
         "exercicios_panturrilha": {
-            1:"Panturrilha no smith com degrau"
+            1:"Panturrilha no smith com degrau 15segundos de descanso"
         },
         "repeticoes_panturrilha": {
-            1: "5x10 15s de descanso"
+            1: "5x10"
         }
     },
     "treino_d": {
@@ -230,12 +230,12 @@ def adicionar_texto_pdf(input_pdf, output_pdf, dados, dados2):
         # Criar um buffer para a nova camada
         packet = BytesIO()
         can = canvas.Canvas(packet, pagesize=letter)
-        can.setFont("Helvetica-Bold", 8)
+        can.setFont("Helvetica-Bold", 10)
         can.setFillColorRGB(255, 255, 255)  # Cor do texto (preto)
 
         # Adicionar texto dependendo da página
         if page_number == 0:  # Página 1
-            y_position_text= 660  # Posição inicial no eixo Y
+            y_position_text= 665  # Posição inicial no eixo Y
             y_position_text2 = 650
             y_position_rep = 650
 
@@ -269,7 +269,7 @@ def adicionar_texto_pdf(input_pdf, output_pdf, dados, dados2):
                         y_position_rep -= 35
 
             # Repetir para treino B
-            y_position_text = 660
+            y_position_text = 665
             y_position_text2 = 650
             y_position_rep = 650
 
@@ -281,27 +281,27 @@ def adicionar_texto_pdf(input_pdf, output_pdf, dados, dados2):
                         for index, linha in enumerate(linhas):  # Use enumerate para obter o índice e o valor
                             if len(linhas) > 1:
                                 if index == 0:  # Se for o índice 0
-                                    can.drawString(305, y_position_text, linha)  # Nome do exercício na posição text
+                                    can.drawString(300, y_position_text, linha)  # Nome do exercício na posição text
                                 elif index == 1:  # Se for o índice 1
                                     print(f"Segunda linha: {linha}")
-                                    can.drawString(305, y_position_text2, linha)  # Nome do exercício na posição text2
+                                    can.drawString(300, y_position_text2, linha)  # Nome do exercício na posição text2
                                 else:
                                     # Caso tenha mais linhas, ajuste a posição dinamicamente
                                     y_position_text2 -= 10
                                     print(f"Linha adicional: {linha}")
-                                    can.drawString(305, y_position_text2, linha)
+                                    can.drawString(300, y_position_text2, linha)
                             else:
-                                can.drawString(305, y_position_text2, linha)
+                                can.drawString(300, y_position_text2, linha)
                                 
 
-                        can.drawString(500, y_position_rep, f"{repeticao}")  # Repetições
+                        can.drawString(480, y_position_rep, f"{repeticao}")  # Repetições
                         y_position_text -= 35
                         y_position_text2 -= 35
                         y_position_rep -= 35
 
 
         elif page_number == 1:  # Página 2
-            y_position_text = 595
+            y_position_text = 600
             y_position_text2 = 585
             y_position_rep = 585
 
