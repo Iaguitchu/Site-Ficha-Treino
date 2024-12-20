@@ -11,7 +11,7 @@ import textwrap
 dados_exemplo = {
     "treino_a": {
         "exercicios_costas": {
-            1: "Remada Curvada Pronada a cada 5 descase 10 segundos",
+            1: "Remada Curvada Pronada a cada 5 descanse 10 segundos",
             2: "Remada Curvada Supinada",
             3: "Barra Fixa",
             4: "Puxada alta contraia 2s e volta em 4s",
@@ -33,16 +33,14 @@ dados_exemplo = {
         "exercicios_posteriorombro":{
             1: "Peck deck invertido com drop",
             2: "Remada alta Smith",
-            3: "Encolhimento trapezio",
-            4: "Posterior de ombro no cabo médio",
-            5: "Posterior de ombro no banco 45º a cada 5 descanse 10 segundos"
+            3: "Posterior de ombro no cabo médio",
+            4: "Posterior de ombro no banco 45º a cada 5 descanse 10 segundos"
         },
         "repeticoes_posteriorombro": {
             1: "3x15/15",
             2: "3x12",
-            3: "4x10",
-            4: "4x12",
-            5: "1x12 2x20 " 
+            3: "4x12",
+            4: "1x12 2x20 " 
         },
         "exercicios_posteriorcoxa":{
             1: "Mesa flexora",
@@ -57,7 +55,7 @@ dados_exemplo = {
             4: "3x8 (pesado)"
         }
     },
-    "treino_b": {
+    "treino_c": {
         "exercicios_quadriceps": {
             1: "Agachamento Livre",
             2: "Leg Press",
@@ -82,13 +80,13 @@ dados_exemplo = {
             1: "5x12 "
         },
         "exercicios_adutor": {
-            1:"Cadeira Adutora a cada 5 descase 10s"
+            1:"Cadeira Adutora a cada 5 descanse 10s"
         },
         "repeticoes_adutor": {
             1:"1x12 3x20"
         }
     },
-    "treino_c": { 
+    "treino_b": { 
  
         "exercicios_peito": {
             1: "Supino inclinado com halteres ou articulado",
@@ -109,6 +107,18 @@ dados_exemplo = {
             6:"5x10 ",
             
         },
+        "exercicios_biceps": {
+            1: "Rosca Simultanea com halteres",
+            2: "Rosca Concentrada",
+            3: "Rosca Alternada banco 45º"            
+            
+        },
+        "repeticoes_biceps": {
+            1: "4x12",
+            2: "1x15 3x8",
+            3: "4x10"
+            
+        },
         "exercicios_panturrilha": {
             1:"Panturrilha no smith com degrau 15segundos de descanso"
         },
@@ -122,14 +132,14 @@ dados_exemplo = {
             2: "Rosca Scott Unilatral",
             3: "Biceps na polia alta unilateral",
             4: "Biceps no banco 45º martelo simultaneo",
-            5: "Rosca alternada"
+            5: "Rosca alternada 4s descendo 2s contraindo"
         },
         "repeticoes_biceps": {
             1: "4x10",
             2: "4x10 (controlado)",
             3: "3x15",
             4: "4x10",
-            5: "3x12 4s descendo 2s contraindo"
+            5: "3x12"
         },
         "exercicios_triceps": {
             1: "Triceps com barra na polia",
@@ -151,20 +161,26 @@ dados_exemplo = {
             1: "Desenvolvimento com halteres + Elevação frontal com barra",
             2: "Elevação lateral com halter drop set",
             3: "Elevação lateral na polia",
-            4: "Desenvolvimento arnold"
+            4: "Desenvolvimento arnold",
+            5: "Elevação lateral no banco 45º",
+            6: "Elevação frontal pegada supinada no banco 45º",
+            7: "Encolhimento trapezio"
         },
         "repeticoes_ombro": {
             1: "3x15 + 15",
             2: "3x6-8-10 3x10-8-6",
             3: "4x10",
-            4: "3x12"
+            4: "3x12",
+            5: "4x10",
+            6: "3x15",
+            7: "4x10",
         },
         "exercicios_panturrilha": {
-            1: "Panturrilha unilateral degrau"
+            1: "Panturrilha unilateral degrau descanse 10 segundos"
         },
 
         "repeticoes_panturrilha": {
-            1: "3x20 descase 10 segundos"
+            1: "3x20"
         }
     }
 }
@@ -181,20 +197,21 @@ def gerar_treino_aleatorio(dados_exemplo):
             "exercicios_posteriorcoxa": 2,
         },
         "treino_b": {
+            "exercicios_peito": 4,
+            "exercicios_panturrilha": 1,
+            "exercicios_biceps": 2
+        },
+        "treino_c": {
             "exercicios_quadriceps": 4,
             "exercicios_panturrilha": 1,
             "exercicios_adutor": 1,
-        },
-        "treino_c": {
-            "exercicios_peito": 4,
-            "exercicios_panturrilha": 1,
         },
         "treino_d": {
             "exercicios_biceps": 3,
             "exercicios_triceps": 3,
         },
         "treino_e": {
-            "exercicios_ombro": 3,  # Incluindo "Elevação lateral com halter drop set"
+            "exercicios_ombro": 4,
             "exercicios_panturrilha": 1,
         }
     }
@@ -220,7 +237,6 @@ def gerar_treino_aleatorio(dados_exemplo):
 
 
 # Função para adicionar texto ao PDF
-# Função para adicionar texto ao PDF
 def adicionar_texto_pdf(input_pdf, output_pdf, dados, dados2):
     # Ler o PDF original
     reader = PdfReader(input_pdf)
@@ -244,7 +260,7 @@ def adicionar_texto_pdf(input_pdf, output_pdf, dados, dados2):
                 if isinstance(exercicios, dict):  # Certificar que é um grupo válido
                     for nome, repeticao in exercicios.items():
                         # Quebrar texto em múltiplas linhas se ultrapassar 35 caracteres
-                        linhas = textwrap.wrap(nome, width=35)
+                        linhas = textwrap.wrap(nome, width=30)
                         print(linhas, len(linhas))
                         for index, linha in enumerate(linhas):  # Use enumerate para obter o índice e o valor
                             if len(linhas) > 1:
@@ -262,7 +278,7 @@ def adicionar_texto_pdf(input_pdf, output_pdf, dados, dados2):
                                 can.drawString(20, y_position_text2, linha)
                                 
 
-                        can.drawString(210, y_position_rep, f"{repeticao}")  # Repetições
+                        can.drawString(200, y_position_rep, f"{repeticao}")  # Repetições
 
                         y_position_text -= 35
                         y_position_text2 -= 35
@@ -277,7 +293,70 @@ def adicionar_texto_pdf(input_pdf, output_pdf, dados, dados2):
                 if isinstance(exercicios, dict):  # Certificar que é um grupo válido
                     for nome, repeticao in exercicios.items():
                         # Quebrar texto em múltiplas linhas se ultrapassar 35 caracteres
-                        linhas = textwrap.wrap(nome, width=35)
+                        linhas = textwrap.wrap(nome, width=30)
+                        for index, linha in enumerate(linhas):  # Use enumerate para obter o índice e o valor
+                            if len(linhas) > 1:
+                                if index == 0:  # Se for o índice 0
+                                    can.drawString(300, y_position_text, linha)  # Nome do exercício na posição text
+                                elif index == 1:  # Se for o índice 1
+                                    print(f"Segunda linha: {linha}")
+                                    can.drawString(300, y_position_text2, linha)  # Nome do exercício na posição text2
+                                else:
+                                    # Caso tenha mais linhas, ajuste a posição dinamicamente
+                                    y_position_text2 -= 10
+                                    print(f"Linha adicional: {linha}")
+                                    can.drawString(300, y_position_text2, linha)
+                            else:
+                                can.drawString(300, y_position_text2, linha)
+                                
+
+                        can.drawString(480, y_position_rep, f"{repeticao}")  # Repetições
+                        y_position_text -= 35
+                        y_position_text2 -= 35
+                        y_position_rep -= 35
+
+            # Repetir para treino C
+            y_position_text = 300
+            y_position_text2 = 285
+            y_position_rep = 285
+            
+            for grupo, exercicios in dados["treino_c"].items():
+                if isinstance(exercicios, dict):  # Certificar que é um grupo válido
+                    for nome, repeticao in exercicios.items():
+                        # Quebrar texto em múltiplas linhas se ultrapassar 35 caracteres
+                        linhas = textwrap.wrap(nome, width=30)
+                        print(linhas, len(linhas))
+                        for index, linha in enumerate(linhas):  # Use enumerate para obter o índice e o valor
+                            if len(linhas) > 1:
+                                if index == 0:  # Se for o índice 0
+                                    can.drawString(20, y_position_text, linha)  # Nome do exercício na posição text
+                                elif index == 1:  # Se for o índice 1
+                                    print(f"Segunda linha: {linha}")
+                                    can.drawString(20, y_position_text2, linha)  # Nome do exercício na posição text2
+                                else:
+                                    # Caso tenha mais linhas, ajuste a posição dinamicamente
+                                    y_position_text2 -= 10
+                                    print(f"Linha adicional: {linha}")
+                                    can.drawString(20, y_position_text2, linha)
+                            else:
+                                can.drawString(20, y_position_text2, linha)
+                                
+
+                        can.drawString(200, y_position_rep, f"{repeticao}")  # Repetições
+                        y_position_text -= 35
+                        y_position_text2 -= 35
+                        y_position_rep -= 35
+
+             # Repetir para treino C
+            y_position_text = 300
+            y_position_text2 = 285
+            y_position_rep = 285
+            
+            for grupo, exercicios in dados["treino_d"].items():
+                if isinstance(exercicios, dict):  # Certificar que é um grupo válido
+                    for nome, repeticao in exercicios.items():
+                        # Quebrar texto em múltiplas linhas se ultrapassar 35 caracteres
+                        linhas = textwrap.wrap(nome, width=30)
                         for index, linha in enumerate(linhas):  # Use enumerate para obter o índice e o valor
                             if len(linhas) > 1:
                                 if index == 0:  # Se for o índice 0
@@ -300,16 +379,17 @@ def adicionar_texto_pdf(input_pdf, output_pdf, dados, dados2):
                         y_position_rep -= 35
 
 
+
         elif page_number == 1:  # Página 2
             y_position_text = 600
             y_position_text2 = 585
             y_position_rep = 585
 
-            for grupo, exercicios in dados["treino_c"].items():
+            for grupo, exercicios in dados["treino_e"].items():
                 if isinstance(exercicios, dict):  # Certificar que é um grupo válido
                     for nome, repeticao in exercicios.items():
                         # Quebrar texto em múltiplas linhas se ultrapassar 35 caracteres
-                        linhas = textwrap.wrap(nome, width=35)
+                        linhas = textwrap.wrap(nome, width=30)
                         for index, linha in enumerate(linhas):  # Use enumerate para obter o índice e o valor
                             if len(linhas) > 1:
                                 if index == 0:  # Se for o índice 0
